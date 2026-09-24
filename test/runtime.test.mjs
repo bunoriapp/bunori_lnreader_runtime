@@ -123,3 +123,25 @@ test('Cheerio HTML parsing works correctly', () => {
     assert.strictEqual($('li.sp_li_chp').length, 2);
     assert.strictEqual($('li.sp_li_chp a').first().text(), 'Chapter 1');
 });
+
+test('CommonJS environment, require, and __bunori_bridge are properly defined', () => {
+    const { sandbox } = createEnvironment();
+
+    assert.strictEqual(typeof sandbox.exports, 'object');
+    assert.strictEqual(typeof sandbox.module, 'object');
+    assert.strictEqual(sandbox.module.exports, sandbox.exports);
+
+    assert.strictEqual(typeof sandbox.require, 'function');
+    const fetchMod = sandbox.require('@libs/fetch');
+    assert.strictEqual(typeof fetchMod.fetchApi, 'function');
+
+    const statusMod = sandbox.require('@libs/novelStatus');
+    assert.strictEqual(statusMod.NovelStatus.Ongoing, 'Ongoing');
+
+    assert.strictEqual(typeof sandbox.__bunori_bridge, 'object');
+    assert.strictEqual(typeof sandbox.__bunori_bridge.search, 'function');
+    assert.strictEqual(typeof sandbox.__bunori_bridge.getNovelDetails, 'function');
+    assert.strictEqual(typeof sandbox.__bunori_bridge.getChapterContent, 'function');
+    assert.strictEqual(typeof sandbox.__bunori_bridge.getListings, 'function');
+    assert.strictEqual(typeof sandbox.__bunori_bridge.getListingNovels, 'function');
+});

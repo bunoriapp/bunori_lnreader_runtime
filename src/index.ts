@@ -8,6 +8,8 @@ import { installStorage } from './polyfills/storage';
 import { installFetch } from './polyfills/fetch';
 import { installCheerio } from './libs/cheerio';
 import { installCrypto } from './libs/crypto';
+import { installLNReaderModules } from './lnreader/modules';
+import { installBunoriBridge } from './bridge/bunoriBridge';
 import dayjs from 'dayjs';
 
 // Resolve global scope
@@ -52,6 +54,10 @@ installFetch(g);
 installCheerio(g);
 installCrypto(g);
 g.dayjs = dayjs;
+
+// Install LNReader & Bunori Bridge
+installLNReaderModules(g);
+installBunoriBridge(g);
 
 // Export metadata
 export const RUNTIME_VERSION = "1.0.0";
