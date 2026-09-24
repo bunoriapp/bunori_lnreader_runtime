@@ -1,0 +1,19 @@
+{
+  "name": "bunori-runtime",
+  "version": "1.0.0",
+  "description": "Modular QuickJS browser runtime for Bunori extensions",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "@noble/ciphers": "^2.1.1",
+    "cheerio": "^1.0.0",
+    "dayjs": "^1.11.13"
+  }
+}
