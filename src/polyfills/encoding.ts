@@ -24,7 +24,7 @@ export function atobPolyfill(input: string): string {
     }
     let output = "";
     for (
-        let bc = 0, bs = 0, buffer = 0, idx = 0;
+        let bc = 0, bs = 0, buffer: any = 0, idx = 0;
         (buffer = str.charAt(idx++));
         ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
             bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0

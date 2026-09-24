@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name to release (e.g. v1.0.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Release Runtime
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Run Full Checks
+        run: npm run check
+
+      - name: Generate Checksum
+        run: |
+          sha256sum dist/runtime.js > dist/runtime.js.sha256
+          echo "SHA256: $(cat dist/runtime.js.sha256)"
+
+      - name: Determine Tag Name
+        id: tag
+        run: |
+          if [ -n "${{ inputs.tag_name }}" ]; then
+            echo "val=${{ inputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "val=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.val }}
+          name: Release ${{ steps.tag.outputs.val }}
+          files: |
+            dist/runtime.js
+            dist/runtime.js.sha256
+          generate_release_notes: true
+          draft: false
+          prerelease: false

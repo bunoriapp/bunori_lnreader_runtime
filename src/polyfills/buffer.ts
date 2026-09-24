@@ -5,8 +5,9 @@ export class BufferPolyfill extends Uint8Array {
         return obj instanceof BufferPolyfill || (obj && obj._isBuffer);
     }
 
-    static from(data: any, encoding?: string): BufferPolyfill {
+    static override from(data: any, encodingOrMapFn?: any, thisArg?: any): BufferPolyfill {
         if (typeof data === "string") {
+            const encoding = typeof encodingOrMapFn === "string" ? encodingOrMapFn : undefined;
             if (encoding === "base64") {
                 const binary = atobPolyfill(data);
                 const buf = new BufferPolyfill(binary.length);
@@ -33,7 +34,7 @@ export class BufferPolyfill extends Uint8Array {
         }
 
         if (ArrayBuffer.isView(data)) {
-            const buf = new BufferPolyfill(data.buffer, data.byteOffset, data.byteLength);
+            const buf = new BufferPolyfill(data.buffer as ArrayBuffer, data.byteOffset, data.byteLength);
             return buf;
         }
 

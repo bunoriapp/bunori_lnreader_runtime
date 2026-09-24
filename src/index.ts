@@ -10,7 +10,7 @@ import { installLNReaderModules } from './lnreader/modules';
 import { installBunoriBridge } from './bridge/bunoriBridge';
 import dayjs from 'dayjs';
 
-const g: any = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : this;
+const g: any = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof (globalThis as any).global !== "undefined" ? (globalThis as any).global : this;
 
 g.globalThis = g;
 g.window = g;
