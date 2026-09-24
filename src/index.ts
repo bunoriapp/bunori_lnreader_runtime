@@ -22,6 +22,9 @@ const g: any = typeof globalThis !== "undefined"
 g.globalThis = g;
 g.window = g;
 g.global = g;
+g.exports = {};
+g.module = { exports: g.exports };
+g.process = { env: {} };
 
 // Timers fallback
 if (typeof g.setTimeout === "undefined") {
