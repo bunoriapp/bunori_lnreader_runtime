@@ -51,6 +51,28 @@ jobs:
             echo "val=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Generate Version Metadata
+        run: |
+          node -e '
+            import("fs").then(fs => {
+              import("crypto").then(crypto => {
+                const tag = "${{ steps.tag.outputs.val }}";
+                const version = tag.replace(/^v/, "");
+                const content = fs.readFileSync("dist/runtime.js");
+                const hash = crypto.createHash("sha256").update(content).digest("hex");
+                const meta = {
+                  version: version,
+                  tag: tag,
+                  sha256: hash,
+                  size: content.length,
+                  releasedAt: new Date().toISOString()
+                };
+                fs.writeFileSync("dist/version.json", JSON.stringify(meta, null, 2));
+                console.log("Generated version.json:", meta);
+              });
+            });
+          '
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -59,6 +81,7 @@ jobs:
           files: |
             dist/runtime.js
             dist/runtime.js.sha256
+            dist/version.json
           generate_release_notes: true
           draft: false
           prerelease: false
