@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --test",
     "build": "node build.mjs",
-    "check": "npm run typecheck && npm test && npm run build",
+    "pretest": "npm run build",
+    "test": "node --test",
+    "check": "npm run typecheck && npm test",
     "sync:bunori": "npm run check && cp dist/runtime.js ../Bunori/app/src/main/assets/ln_reader_runtime.js && echo 'Successfully synced runtime to Bunori assets!'"
   },
   "devDependencies": {
