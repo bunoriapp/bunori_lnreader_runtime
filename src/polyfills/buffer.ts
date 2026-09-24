@@ -1,4 +1,3 @@
-// Lightweight Buffer polyfill for QuickJS / browser
 import { btoaPolyfill, atobPolyfill } from './encoding';
 
 export class BufferPolyfill extends Uint8Array {

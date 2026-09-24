@@ -1,4 +1,3 @@
-// Standard FormData Polyfill for embedded JavaScript engines
 export class FormDataPolyfill {
     private _data: [string, any][] = [];
 

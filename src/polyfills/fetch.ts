@@ -1,4 +1,3 @@
-// HTTP Fetch and Native Bridge implementation
 import { FormDataPolyfill } from './formData';
 import { URLSearchParamsPolyfill } from './url';
 

@@ -1,4 +1,3 @@
-// Base64 and TextEncoder/Decoder polyfills
 const B64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
 export function btoaPolyfill(input: string): string {
