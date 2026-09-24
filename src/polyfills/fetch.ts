@@ -114,6 +114,8 @@ export async function fetchApi(url: string, init: FetchOptions = {}): Promise<an
     const headersObj = parsed.headers || {};
 
     return {
+        url: parsed.url || url,
+        redirected: !!(parsed.url && parsed.url !== url),
         status: parsed.status || 200,
         statusText: parsed.statusText || "OK",
         ok: (parsed.status >= 200 && parsed.status < 300) || parsed.status === undefined,

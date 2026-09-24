@@ -75,8 +75,37 @@ test('fetchApi serializes FormData with correct Content-Type', async () => {
     assert.strictEqual(captured.init.headers['Content-Type'], 'application/x-www-form-urlencoded; charset=UTF-8');
     assert.strictEqual(captured.init.body, 'action=nd_getchapters&mypostid=12345');
 
+    assert.strictEqual(response.url, 'https://www.novelupdates.com/wp-admin/admin-ajax.php');
+    assert.strictEqual(response.redirected, false);
+
     const data = await response.json();
     assert.strictEqual(data.success, true);
+});
+
+test('fetchApi handles redirected response.url correctly', async () => {
+    let capturedRequest = null;
+    const sandbox = {
+        __native_fetch: async (url, initJson) => {
+            capturedRequest = { url, init: JSON.parse(initJson) };
+            return JSON.stringify({
+                url: "https://www.webnovel.com/rssbook/123/456",
+                status: 200,
+                statusText: "OK",
+                headers: { "content-type": "text/html" },
+                body: "<html><head><title>Chapter 1</title></head><body>Content</body></html>"
+            });
+        }
+    };
+
+    vm.createContext(sandbox);
+    vm.runInContext(runtimeCode, sandbox);
+
+    const res = await sandbox.fetchApi('https://www.novelupdates.com/extnu/2303410/');
+    assert.strictEqual(res.url, 'https://www.webnovel.com/rssbook/123/456');
+    assert.strictEqual(res.redirected, true);
+
+    const domainParts = res.url.toLowerCase().split('/')[2].split('.');
+    assert.deepStrictEqual([...domainParts], ['www', 'webnovel', 'com']);
 });
 
 test('Cheerio HTML parsing works correctly', () => {
