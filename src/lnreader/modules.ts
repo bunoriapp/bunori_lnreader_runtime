@@ -1,10 +1,55 @@
-// LNReader Module Registry and require() shim
+import * as htmlparser2 from 'htmlparser2';
+
+class PluginStorage {
+    private _db: Record<string, any> = {};
+
+    set(key: string, value: any, expires?: Date | number): void {
+        this._db[key] = {
+            created: new Date(),
+            value,
+            expires: expires instanceof Date ? expires.getTime() : expires
+        };
+    }
+
+    get(key: string, raw?: boolean): any {
+        const item = this._db[key];
+        if (!item) return undefined;
+        if (item.expires && Date.now() > item.expires) {
+            delete this._db[key];
+            return undefined;
+        }
+        return raw ? item : item.value;
+    }
+
+    delete(key: string): void {
+        delete this._db[key];
+    }
+
+    clearAll(): void {
+        this._db = {};
+    }
+
+    getAllKeys(): string[] {
+        return Object.keys(this._db);
+    }
+}
+
+class PluginLocalStorage {
+    private _db: Record<string, string> = {};
+    get(): Record<string, string> {
+        return this._db;
+    }
+}
 
 export function installLNReaderModules(target: any) {
+    const defaultStorage = new PluginStorage();
+    const defaultLocalStorage = new PluginLocalStorage();
+    const defaultSessionStorage = new PluginLocalStorage();
+
     const modules: Record<string, any> = {
         "cheerio": target.cheerio || {},
         "dayjs": target.dayjs || {},
-        "htmlparser2": (target.cheerio && (target.cheerio as any).htmlparser2) || {},
+        "htmlparser2": htmlparser2,
         "urlencode": {
             encode: (str: string) => encodeURIComponent(str),
             decode: (str: string) => decodeURIComponent(str)
@@ -63,9 +108,9 @@ export function installLNReaderModules(target: any) {
             }
         },
         "@libs/storage": {
-            storage: target.localStorage,
-            localStorage: target.localStorage,
-            sessionStorage: target.sessionStorage
+            storage: defaultStorage,
+            localStorage: defaultLocalStorage,
+            sessionStorage: defaultSessionStorage
         },
         "@libs/aes": {
             gcm: target.aesGcm

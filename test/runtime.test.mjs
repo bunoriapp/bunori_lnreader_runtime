@@ -138,6 +138,15 @@ test('CommonJS environment, require, and __bunori_bridge are properly defined', 
     const statusMod = sandbox.require('@libs/novelStatus');
     assert.strictEqual(statusMod.NovelStatus.Ongoing, 'Ongoing');
 
+    const storageMod = sandbox.require('@libs/storage');
+    assert.strictEqual(typeof storageMod.storage.get, 'function');
+    assert.strictEqual(storageMod.storage.get('hideLocked'), undefined);
+    storageMod.storage.set('hideLocked', true);
+    assert.strictEqual(storageMod.storage.get('hideLocked'), true);
+
+    const htmlparser2Mod = sandbox.require('htmlparser2');
+    assert.strictEqual(typeof htmlparser2Mod.Parser, 'function');
+
     assert.strictEqual(typeof sandbox.__bunori_bridge, 'object');
     assert.strictEqual(typeof sandbox.__bunori_bridge.search, 'function');
     assert.strictEqual(typeof sandbox.__bunori_bridge.getNovelDetails, 'function');
