@@ -1,15 +1,14 @@
 {
   "name": "bunori-runtime",
   "version": "1.0.0",
-  "description": "Modular QuickJS browser runtime for Bunori extensions",
+  "description": "browser runtime for lnreader extensions in bunori",
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "node build.mjs",
     "pretest": "npm run build",
     "test": "node --test",
-    "check": "npm run typecheck && npm test",
-    "sync:bunori": "npm run check && cp dist/runtime.js ../Bunori/app/src/main/assets/ln_reader_runtime.js && echo 'Successfully synced runtime to Bunori assets!'"
+    "check": "npm run typecheck && npm test"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",
