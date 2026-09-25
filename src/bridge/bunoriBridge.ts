@@ -53,7 +53,14 @@ export function installBunoriBridge(target: any) {
         return site + cleanPath;
     }
 
-    function resolvePluginPath(plugin: any, fullUrlOrPath: string): string {
+    function normalizeUrl(url: string): string {
+        return (url || "")
+            .replace(/^https?:\/\//i, "")
+            .replace(/\/+$/, "")
+            .toLowerCase();
+    }
+
+    function resolvePluginPath(plugin: any, fullUrlOrPath: string, isNovel?: boolean): string {
         if (!fullUrlOrPath) return "";
         let path = fullUrlOrPath;
         const site = plugin.site || "";
@@ -62,6 +69,34 @@ export function installBunoriBridge(target: any) {
 
         if (cleanSite && cleanUrl.startsWith(cleanSite)) {
             path = cleanUrl.slice(cleanSite.length);
+        }
+
+        if (typeof plugin.resolveUrl === "function" && typeof isNovel === "boolean") {
+            const normalizedTarget = normalizeUrl(fullUrlOrPath);
+            const cleanPathNoSlash = path.replace(/^\/+/, "");
+
+            const candidates: string[] = [];
+            const addCand = (c: string) => {
+                if (c && !candidates.includes(c)) candidates.push(c);
+            };
+
+            const slug = cleanPathNoSlash.split("/").filter(Boolean).pop() || "";
+            addCand(slug);
+
+            const strippedRoute = cleanPathNoSlash.replace(/^(novels?|series|book|library|manga|story)\//i, "");
+            addCand(strippedRoute);
+
+            addCand(cleanPathNoSlash);
+            addCand(path.startsWith("/") ? path : ("/" + path));
+
+            for (const cand of candidates) {
+                try {
+                    const resolved = plugin.resolveUrl(cand, isNovel);
+                    if (resolved && normalizeUrl(resolved) === normalizedTarget) {
+                        return cand;
+                    }
+                } catch (_) {}
+            }
         }
 
         if (site.endsWith("/")) {
@@ -106,7 +141,7 @@ export function installBunoriBridge(target: any) {
         getNovelDetails: async function (novelUrl: string) {
             const plugin = getPlugin();
             if (!plugin) throw new Error("LNReader Plugin not initialized");
-            const novelPath = resolvePluginPath(plugin, novelUrl);
+            const novelPath = resolvePluginPath(plugin, novelUrl, true);
 
             let novel: any;
             try {
@@ -191,7 +226,7 @@ export function installBunoriBridge(target: any) {
         getChapterContent: async function (chapterUrl: string) {
             const plugin = getPlugin();
             if (!plugin) throw new Error("LNReader Plugin not initialized");
-            const chapterPath = resolvePluginPath(plugin, chapterUrl);
+            const chapterPath = resolvePluginPath(plugin, chapterUrl, false);
             try {
                 const content = await plugin.parseChapter(chapterPath);
                 if (content) return content;
