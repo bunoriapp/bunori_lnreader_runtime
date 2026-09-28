@@ -21,7 +21,8 @@ export function installLNReaderModules(target: any) {
             fetchApi: (...args: any[]) => target.fetchApi(...args),
             fetchText: (...args: any[]) => target.fetchText(...args),
             fetchFile: (...args: any[]) => target.fetchFile(...args),
-            fetchProto: (...args: any[]) => target.fetchProto(...args)
+            fetchProto: (...args: any[]) => target.fetchProto(...args),
+            Headers: target.Headers,
         },
         "@libs/filterInputs": {
             FilterTypes

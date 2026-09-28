@@ -1,4 +1,5 @@
 import { FormDataPolyfill } from './formData';
+import { HeadersPolyfill } from './headers';
 import { URLSearchParamsPolyfill } from './url';
 
 declare const __native_fetch: ((url: string, initJson: string) => Promise<string> | string) | undefined;
@@ -112,16 +113,15 @@ export async function fetchApi(url: string, init: FetchOptions = {}): Promise<an
     const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
     const headersObj = parsed.headers || {};
 
+    const responseHeaders = new HeadersPolyfill(headersObj);
+
     return {
         url: parsed.url || url,
         redirected: !!(parsed.url && parsed.url !== url),
         status: parsed.status || 200,
         statusText: parsed.statusText || "OK",
         ok: (parsed.status >= 200 && parsed.status < 300) || parsed.status === undefined,
-        headers: {
-            get: (key: string) => headersObj[key.toLowerCase()] || headersObj[key] || null,
-            ...headersObj
-        },
+        headers: responseHeaders,
         text: async () => parsed.body || "",
         json: async () => JSON.parse(parsed.body || "{}"),
         blob: async () => parsed.body || "",

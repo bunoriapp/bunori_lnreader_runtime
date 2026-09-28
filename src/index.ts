@@ -4,6 +4,7 @@ import { installBuffer } from './polyfills/buffer';
 import { installFormData } from './polyfills/formData';
 import { installURL } from './polyfills/url';
 import { installFetch } from './polyfills/fetch';
+import { installHeaders } from './polyfills/headers';
 import { installCheerio } from './libs/cheerio';
 import { installCrypto } from './libs/crypto';
 import { installLNReaderModules } from './lnreader/modules';
@@ -37,6 +38,7 @@ installBuffer(g);
 installFormData(g);
 installURL(g);
 installFetch(g);
+installHeaders(g);
 
 installCheerio(g);
 installCrypto(g);
